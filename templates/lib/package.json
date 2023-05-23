@@ -1,0 +1,24 @@
+{
+  "name": "@neuron/asyncapi-template-lib",
+  "version": "0.5.2",
+  "description": "Shared utils for AsyncAPI templates",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "asyncapi",
+    "generator",
+    "template"
+  ],
+  "author": "Arnar INGASON",
+  "repository": {
+    "type": "git",
+    "url": "git+https://code.rbi.tech/raiffeisen/neuron-asyncapi-generator.git"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "json-schema-traverse": "^1.0.0"
+  }
+}

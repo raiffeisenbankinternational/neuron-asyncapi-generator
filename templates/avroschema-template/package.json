@@ -1,0 +1,62 @@
+{
+  "name": "@neuron/asyncapi-avroschema-template",
+  "version": "0.4.2",
+  "description": "Template that generates avro schema files from AsyncAPI definition",
+  "scripts": {
+    "test": "echo \"No test specified yet\"",
+    "lint": "echo \"No linter specified yet\"",
+    "generate:assets": "echo 'No additional assets need to be generated at the moment'"
+  },
+  "keywords": [
+    "asyncapi",
+    "generator",
+    "template",
+    "avro"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Arnar Gauti Ingason <arnar.ingason@rbinternational.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://code.rbi.tech/raiffeisen/neuron-asyncapi-generator.git"
+  },
+  "dependencies": {
+    "@asyncapi/generator-filters": "^2.1.0",
+    "@asyncapi/generator-hooks": "^0.1.0",
+    "@asyncapi/generator-react-sdk": "^0.2.25",
+    "@neuron/asyncapi-template-lib": "^0.5.0",
+    "js-yaml": "^4.1.0"
+  },
+  "generator": {
+    "renderer": "react",
+    "generator": ">=0.50.0 <2.0.0",
+    "filters": [
+      "@asyncapi/generator-filters"
+    ]
+  },
+  "devDependencies": {
+    "@asyncapi/generator": "^1.9.12",
+    "@asyncapi/parser": "^1.17.0",
+    "@babel/preset-env": "^7.19.4",
+    "@babel/preset-react": "^7.18.6"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": "current"
+          }
+        }
+      ],
+      [
+        "@babel/preset-react",
+        {
+          "runtime": "automatic"
+        }
+      ]
+    ]
+  }
+}

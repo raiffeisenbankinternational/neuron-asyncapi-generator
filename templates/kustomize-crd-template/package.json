@@ -1,0 +1,59 @@
+{
+  "name": "@neuron/asyncapi-kustomize-crd-template",
+  "version": "0.4.2",
+  "description": "Template that generates neuron operator CRDs in a kustomize application",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://code.rbi.tech/raiffeisen/neuron-asyncapi-generator.git"
+  },
+  "keywords": [
+    "asyncapi",
+    "generator",
+    "template",
+    "kustomize"
+  ],
+  "author": "Arnar Gauti Ingason <arnar.ingason@rbinternational.com>",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@asyncapi/generator-filters": "^2.1.0",
+    "@asyncapi/generator-hooks": "^0.1.0",
+    "@asyncapi/generator-react-sdk": "^0.2.25",
+    "@neuron/asyncapi-template-lib": "^0.5.0",
+    "ejs": "^3.1.8",
+    "js-yaml": "^4.1.0"
+  },
+  "generator": {
+    "renderer": "react",
+    "generator": ">=1.3.0 <2.0.0",
+    "nonRenderableFiles": [
+      "templates/neuron-connection.yaml"
+    ]
+  },
+  "devDependencies": {
+    "@asyncapi/generator": "^1.9.12",
+    "@asyncapi/parser": "^1.17.0",
+    "@babel/preset-env": "^7.19.4",
+    "@babel/preset-react": "^7.18.6"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": "current"
+          }
+        }
+      ],
+      [
+        "@babel/preset-react",
+        {
+          "runtime": "automatic"
+        }
+      ]
+    ]
+  }
+}

@@ -1,0 +1,60 @@
+name: Test and Lint
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  unit_test:
+    runs-on: self-hosted
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: fetch dev-dependencies
+        run: |
+          npm config set registry https://artifacts.rbi.tech/artifactory/api/npm/npm-group/
+          npm install
+
+      - name: run tests
+        shell: bash
+        env:
+          CI: true
+        run: |
+          npx jest --reporters=default --reporters=jest-github-actions-reporter
+
+      - name: output coverage report
+        shell: bash
+        run: |
+          echo "# Unit test coverage" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat ./coverage/report.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+  lint:
+    runs-on: self-hosted
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: fetch dev-dependencies
+        run: |
+          npm config set registry https://artifacts.rbi.tech/artifactory/api/npm/npm-group/
+          npm install eslint
+
+      - name: run eslint
+        shell: bash
+        run: |
+          echo '::add-matcher::.github/eslint.json'
+          npx eslint . | sed -e 's|^${{ github.workspace }}/||g'
+          echo '::remove-matcher owner=eslint::'

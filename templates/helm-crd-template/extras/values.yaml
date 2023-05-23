@@ -1,0 +1,33 @@
+neuron:
+  # Specifies which pulsar service to
+  # talk to when deploying tenants,
+  # namespaces, topics and schemas
+  clusterName: dev01
+
+  # To override special options in
+  # selected tenants, namespaces and
+  # topics you can set them below
+  #
+  # tenants:
+  #   my-tenant:
+  #     settings:
+  #       allowedClusters:
+  #         - dev01
+  #       adminRoles:
+  #         - admin
+  #
+  # namespaces:
+  #   my-namespace:
+  #     policies:
+  #       schemaCompatibilityStrategy: FORWARD_TRANSITIVE
+  #       deduplication: true
+  #
+  # topics:
+  #   my-topic:
+  #     policies:
+  #       schemaCompatibilityStrategy: BACKWARD_TRANSITIVE
+  #
+  # schemas:
+  #   my-schema:
+  #     properties:
+  #       application: my-application

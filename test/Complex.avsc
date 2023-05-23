@@ -1,0 +1,678 @@
+{
+    "name": "BasicCurrentAccount",
+    "type": "record",
+    "namespace": "com.rbinternational.rice.accounts.basic",
+    "fields": [
+        {
+            "name": "balances",
+            "type": [
+                "null",
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "record",
+                        "doc": "A single balance element. ",
+                        "name": "Balance",
+                        "fields": [
+                            {
+                                "name": "amount",
+                                "type": {
+                                    "type": "record",
+                                    "doc": "",
+                                    "name": "Amount",
+                                    "fields": [
+                                        {
+                                            "name": "currency",
+                                            "type": "string",
+                                            "doc": "ISO 4217 Alpha 3 currency code. "
+                                        },
+                                        {
+                                            "name": "amount",
+                                            "type": "string",
+                                            "doc": "The amount given with fractional digits, where fractions must be compliant to the currency definition. Up to 14 significant figures. Negative amounts are signed by minus. The decimal separator is a dot. "
+                                        }
+                                    ]
+                                },
+                                "doc": ""
+                            },
+                            {
+                                "name": "type",
+                                "type": {
+                                    "type": "enum",
+                                    "doc": "Account status ",
+                                    "name": "BalanceType",
+                                    "symbols": [
+                                        "BOOKED",
+                                        "AVAILABLE"
+                                    ]
+                                },
+                                "doc": ""
+                            },
+                            {
+                                "name": "lastChangeDateTime",
+                                "type": [
+                                    "null",
+                                    {
+                                        "type": "long",
+                                        "logicalType": "timestamp-millis"
+                                    }
+                                ],
+                                "doc": "This data element might be used to indicate e.g. with the expected or booked balance that no action is known on the account, which is not yet booked. ",
+                                "default": null
+                            },
+                            {
+                                "name": "lastCommittedTransactionReference",
+                                "type": [
+                                    "null",
+                                    "string"
+                                ],
+                                "doc": "transactionReference from transactions api of the last commited transaction.",
+                                "default": null
+                            }
+                        ]
+                    }
+                }
+            ],
+            "doc": "A list of balances in any currency regarding this account, e.g. the current balance, the last booked balance. ",
+            "default": null
+        },
+        {
+            "name": "accountId",
+            "type": "string",
+            "doc": "Immutable account id. This identifier has no meaning to the account owner."
+        },
+        {
+            "name": "status",
+            "type": {
+                "type": "enum",
+                "doc": "Account status:   - **ACTIVE** - account is fully operational.   - **CLOSED** - account is marked as closed.   - **PENDING_ACTIVATION** - account activation is in progress.   - **BLOCKED** - account is blocked. ",
+                "name": "AccountStatus",
+                "symbols": [
+                    "PENDING_ACTIVATION",
+                    "ACTIVE",
+                    "CLOSED",
+                    "BLOCKED"
+                ]
+            },
+            "doc": ""
+        },
+        {
+            "name": "updateDateTime",
+            "type": [
+                "null",
+                {
+                    "type": "long",
+                    "logicalType": "timestamp-millis"
+                }
+            ],
+            "doc": "Date and time of setting account's status",
+            "default": null
+        },
+        {
+            "name": "currency",
+            "type": [
+                {
+                    "type": "record",
+                    "doc": "ISO 4217 Alpha 3 currency code (connected with account subtype). ",
+                    "name": "AccountSingleCurrency",
+                    "fields": [
+                        {
+                            "name": "currencyType",
+                            "type": {
+                                "type": "enum",
+                                "name": "AccountSingleCurrency_currencyType",
+                                "symbols": [
+                                    "SCA"
+                                ]
+                            },
+                            "doc": "Available single currency types"
+                        },
+                        {
+                            "name": "currency",
+                            "type": "string",
+                            "doc": "ISO 4217 Alpha 3 currency code. "
+                        }
+                    ]
+                },
+                {
+                    "type": "record",
+                    "doc": "List of available currencies for multicurrency account. ",
+                    "name": "AccountMultiCurrency",
+                    "fields": [
+                        {
+                            "name": "currencyType",
+                            "type": {
+                                "type": "enum",
+                                "name": "AccountMultiCurrency_currencyType",
+                                "symbols": [
+                                    "MCA"
+                                ]
+                            },
+                            "doc": "Available single currency types"
+                        },
+                        {
+                            "name": "currencies",
+                            "type": {
+                                "type": "array",
+                                "items": "string"
+                            },
+                            "doc": ""
+                        }
+                    ]
+                }
+            ],
+            "doc": ""
+        },
+        {
+            "name": "type",
+            "type": {
+                "type": "enum",
+                "doc": "- **TERM**  Fixed-term investment that includes the deposit of money into an account. Usually carry short-term maturities ranging from one month to a few years and will have varying levels of required minimum deposits. - **CACC** Current Account used to post debits and credits when no specific account has been nominated. - **CARD** CardAccount Account used for credit card payments. - **CASH** CashPayment Account used for the payment of cash. - **CHAR** Charges Account used for charges if different from the account for payment. - **CISH** CashIncome Account used for payment of income if different from the current cash account - **COMM** Commission Account used for commission if different from the account for payment. - **CPAC** ClearingParticipantSettlementAccount Account used to post settlement debit and credit entries on behalf of a designated Clearing Participant. - **LLSV** LimitedLiquiditySavingsAccount Account used for savings with special interest and withdrawal terms. - **LOAN** Loan Account used for loans. - **MGLD** MarginalLending Account used for a marginal lending facility. - **MOMA** MoneyMarket Account used for money markets if different from the cash account. - **NREX** NonResidentExternal Account used for non-resident external. - **ODFT** Overdraft Account is used for overdrafts. - **ONDP** OverNightDeposit Account used for overnight deposits. - **OTHR** OtherAccount Account not otherwise specified. - **SACC** Settlement Account used to post debit and credit entries, as a result of transactions cleared and settled through a specific clearing and settlement system. - **SLRY** Salary Accounts used for salary payments. - **SVGS** Savings Account used for savings. - **TAXE** Tax Account used for taxes if different from the account for payment. - **TRAN** TransactingAccount A transacting account is the most basic type of bank account that you can get. The main difference between transaction and cheque accounts is that you usually do not get a cheque book with your transacting account and neither are you offered an overdraft facility. - **TRAS** CashTrading Account used for trading if different from the current cash account. ",
+                "name": "AccountType",
+                "symbols": [
+                    "TERM",
+                    "CACC",
+                    "CARD",
+                    "CASH",
+                    "CHAR",
+                    "CISH",
+                    "COMM",
+                    "CPAC",
+                    "LLSV",
+                    "LOAN",
+                    "MGLD",
+                    "MOMA",
+                    "NREX",
+                    "ODFT",
+                    "ONDP",
+                    "OTHR",
+                    "SACC",
+                    "SLRY",
+                    "SVGS",
+                    "TAXE",
+                    "TRAN",
+                    "TRAS"
+                ]
+            },
+            "doc": ""
+        },
+        {
+            "name": "subtype",
+            "type": [
+                "null",
+                "string"
+            ],
+            "doc": "Proprietary account type ",
+            "default": null
+        },
+        {
+            "name": "nickname",
+            "type": [
+                "null",
+                "string"
+            ],
+            "doc": "Account nickname given by the customer.",
+            "default": null
+        },
+        {
+            "name": "openingDate",
+            "type": [
+                "null",
+                {
+                    "type": "int",
+                    "logicalType": "date"
+                }
+            ],
+            "doc": "Account opening date",
+            "default": null
+        },
+        {
+            "name": "closedDate",
+            "type": [
+                "null",
+                {
+                    "type": "int",
+                    "logicalType": "date"
+                }
+            ],
+            "doc": "Account closed date",
+            "default": null
+        },
+        {
+            "name": "bankDetails",
+            "type": {
+                "type": "record",
+                "doc": "Account bank details which contains basic information about name, bic code, branch and country. ",
+                "name": "BankDetails",
+                "fields": [
+                    {
+                        "name": "bankCode",
+                        "type": [
+                            "null",
+                            "string"
+                        ],
+                        "doc": "BICFI ",
+                        "default": null
+                    },
+                    {
+                        "name": "bankName",
+                        "type": [
+                            "null",
+                            "string"
+                        ],
+                        "doc": "bank's name",
+                        "default": null
+                    },
+                    {
+                        "name": "country",
+                        "type": [
+                            "null",
+                            "string"
+                        ],
+                        "doc": "ISO 3166-1 alpha-2 country-code of the bank.",
+                        "default": null
+                    },
+                    {
+                        "name": "branch",
+                        "type": [
+                            "null",
+                            "string"
+                        ],
+                        "doc": "This identifier is used to identify banks branch",
+                        "default": null
+                    }
+                ]
+            },
+            "doc": ""
+        },
+        {
+            "name": "accountIdentifications",
+            "type": {
+                "type": "array",
+                "items": [
+                    {
+                        "type": "record",
+                        "doc": "",
+                        "name": "AccountIban",
+                        "fields": [
+                            {
+                                "name": "accountIdentificationType",
+                                "type": {
+                                    "type": "enum",
+                                    "name": "AccountIban_accountIdentificationType",
+                                    "symbols": [
+                                        "IBAN"
+                                    ]
+                                },
+                                "doc": ""
+                            },
+                            {
+                                "name": "iban",
+                                "type": [
+                                    "null",
+                                    "string"
+                                ],
+                                "doc": "Account IBAN ",
+                                "default": null
+                            }
+                        ]
+                    },
+                    {
+                        "type": "record",
+                        "doc": "",
+                        "name": "AccountBban",
+                        "fields": [
+                            {
+                                "name": "accountIdentificationType",
+                                "type": {
+                                    "type": "enum",
+                                    "name": "AccountBban_accountIdentificationType",
+                                    "symbols": [
+                                        "BBAN"
+                                    ]
+                                },
+                                "doc": ""
+                            },
+                            {
+                                "name": "bban",
+                                "type": [
+                                    "null",
+                                    "string"
+                                ],
+                                "doc": "Basic Bank Account Number (BBAN) Identifier  This data element can be used in the body of the Consent Request   Message for retrieving Account access Consent from this Account. This   data elements is used for payment Accounts which have no IBAN.   ISO20022: Basic Bank Account Number (BBAN).    Identifier used nationally by financial institutions, i.e., in individual countries,   generally as part of a National Account Numbering Scheme(s),   which uniquely identifies the account of a customer. ",
+                                "default": null
+                            }
+                        ]
+                    },
+                    {
+                        "type": "record",
+                        "doc": "",
+                        "name": "AccountPan",
+                        "fields": [
+                            {
+                                "name": "accountIdentificationType",
+                                "type": {
+                                    "type": "enum",
+                                    "name": "AccountPan_accountIdentificationType",
+                                    "symbols": [
+                                        "PAN"
+                                    ]
+                                },
+                                "doc": ""
+                            },
+                            {
+                                "name": "pan",
+                                "type": [
+                                    "null",
+                                    "string"
+                                ],
+                                "doc": "Primary Account Number according to ISO/IEC 7812.",
+                                "default": null
+                            }
+                        ]
+                    },
+                    {
+                        "type": "record",
+                        "doc": "",
+                        "name": "AccountMaskedPan",
+                        "fields": [
+                            {
+                                "name": "accountIdentificationType",
+                                "type": {
+                                    "type": "enum",
+                                    "name": "AccountMaskedPan_accountIdentificationType",
+                                    "symbols": [
+                                        "MASKED_PAN"
+                                    ]
+                                },
+                                "doc": ""
+                            },
+                            {
+                                "name": "maskedPan",
+                                "type": [
+                                    "null",
+                                    "string"
+                                ],
+                                "doc": "Masked Primary Account Number.",
+                                "default": null
+                            }
+                        ]
+                    },
+                    {
+                        "type": "record",
+                        "doc": "",
+                        "name": "AccountMsisdn",
+                        "fields": [
+                            {
+                                "name": "accountIdentificationType",
+                                "type": {
+                                    "type": "enum",
+                                    "name": "AccountMsisdn_accountIdentificationType",
+                                    "symbols": [
+                                        "MSISDN"
+                                    ]
+                                },
+                                "doc": ""
+                            },
+                            {
+                                "name": "msisdn",
+                                "type": [
+                                    "null",
+                                    "string"
+                                ],
+                                "doc": "Mobile phone number.",
+                                "default": null
+                            }
+                        ]
+                    },
+                    {
+                        "type": "record",
+                        "doc": "",
+                        "name": "AccountEmail",
+                        "fields": [
+                            {
+                                "name": "accountIdentificationType",
+                                "type": {
+                                    "type": "enum",
+                                    "name": "AccountEmail_accountIdentificationType",
+                                    "symbols": [
+                                        "EMAIL"
+                                    ]
+                                },
+                                "doc": ""
+                            },
+                            {
+                                "name": "email",
+                                "type": [
+                                    "null",
+                                    "string"
+                                ],
+                                "doc": "",
+                                "default": null
+                            }
+                        ]
+                    },
+                    {
+                        "type": "record",
+                        "doc": "",
+                        "name": "AccountTaxId",
+                        "fields": [
+                            {
+                                "name": "accountIdentificationType",
+                                "type": {
+                                    "type": "enum",
+                                    "name": "AccountTaxId_accountIdentificationType",
+                                    "symbols": [
+                                        "TAX_ID"
+                                    ]
+                                },
+                                "doc": ""
+                            },
+                            {
+                                "name": "taxId",
+                                "type": [
+                                    "null",
+                                    "string"
+                                ],
+                                "doc": "",
+                                "default": null
+                            }
+                        ]
+                    }
+                ]
+            },
+            "doc": ""
+        },
+        {
+            "name": "primaryOwner",
+            "type": [
+                "null",
+                {
+                    "type": "record",
+                    "doc": "",
+                    "name": "Customer",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "type": [
+                                "null",
+                                "string"
+                            ],
+                            "doc": "Customer information file (CIF) id. ",
+                            "default": null
+                        },
+                        {
+                            "name": "name",
+                            "type": [
+                                "null",
+                                "string"
+                            ],
+                            "doc": "Owner customer name",
+                            "default": null
+                        }
+                    ]
+                }
+            ],
+            "doc": "",
+            "default": null
+        },
+        {
+            "name": "secondaryOwners",
+            "type": [
+                "null",
+                {
+                    "type": "array",
+                    "items": "Customer"
+                }
+            ],
+            "doc": "",
+            "default": null
+        },
+        {
+            "name": "connectedCustomers",
+            "type": [
+                "null",
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "record",
+                        "doc": "An entity owning certain part of the company property.",
+                        "name": "ConnectedCustomer",
+                        "fields": [
+                            {
+                                "name": "roles",
+                                "type": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "enum",
+                                        "doc": "A role of the connected person. - **AUTHORIZED_PERSON** - Person that is allowed to authorize to sign transactions. - **MANDATORY_AUTHORIZED_PERSON** - Person that sign is mandatory in transaction authorization process. - **ACCOUNT_BALANCE_ACCESS** - Person that is allowed to check account booked and available balance. - **ACCOUNT_TRANSACTIONS_ACCESS** - Person that is allowed to check transaction history on the account. - **PAYMENT_INITIATION** - Person is allowed to initiate payment on the account. ",
+                                        "name": "CustomerConnectionRole",
+                                        "symbols": [
+                                            "AUTHORIZED_PERSON",
+                                            "MANDATORY_AUTHORIZED_PERSON",
+                                            "ACCOUNT_BALANCE_ACCESS",
+                                            "ACCOUNT_TRANSACTIONS_ACCESS",
+                                            "PAYMENT_INITIATION"
+                                        ]
+                                    }
+                                },
+                                "doc": ""
+                            },
+                            {
+                                "name": "ownerRelationshipType",
+                                "type": [
+                                    "null",
+                                    {
+                                        "type": "enum",
+                                        "doc": "A relationship type with primary owner of the account.",
+                                        "name": "OwnerRelationshipType",
+                                        "symbols": [
+                                            "SISTER",
+                                            "BROTHER",
+                                            "MOTHER",
+                                            "FATHER",
+                                            "HUSBAND",
+                                            "WIFE",
+                                            "DOUGHTER",
+                                            "SON",
+                                            "PARTNER",
+                                            "BUSINESS_PARTNER",
+                                            "AUNT",
+                                            "GRANDFATHER",
+                                            "GRANDMOTHER",
+                                            "RELATIVE",
+                                            "NIECE",
+                                            "NEPHEW",
+                                            "OWNER",
+                                            "CO_OWNER",
+                                            "ADMINISTRATOR",
+                                            "ACCOUNTANT",
+                                            "BOARD_MEMBER",
+                                            "CHIEF_EXECUTIVE",
+                                            "MANAGER",
+                                            "UNCLE",
+                                            "EMPLOYEE",
+                                            "GUARDIAN"
+                                        ]
+                                    }
+                                ],
+                                "doc": "",
+                                "default": null
+                            },
+                            {
+                                "name": "customer",
+                                "type": "Customer",
+                                "doc": ""
+                            }
+                        ]
+                    }
+                }
+            ],
+            "doc": "",
+            "default": null
+        },
+        {
+            "name": "numberOfSignatures",
+            "type": [
+                "null",
+                "string"
+            ],
+            "doc": "number of signatures",
+            "default": null
+        },
+        {
+            "name": "restrictions",
+            "type": [
+                "null",
+                {
+                    "type": "enum",
+                    "doc": "",
+                    "name": "AccountRestrictions",
+                    "symbols": [
+                        "NONE",
+                        "CREDIT",
+                        "DEBIT",
+                        "FULL"
+                    ]
+                }
+            ],
+            "doc": "",
+            "default": null
+        },
+        {
+            "name": "isMandatorySignatureRequired",
+            "type": [
+                "null",
+                "boolean"
+            ],
+            "doc": "Defines if mandatory signature is required during transaction authorization process.",
+            "default": null
+        },
+        {
+            "name": "relatedProductId",
+            "type": [
+                "null",
+                "string"
+            ],
+            "doc": "This identifier is used to identify product related to create account request.",
+            "default": null
+        },
+        {
+            "name": "raiffeisenOnlineRights",
+            "type": [
+                "null",
+                {
+                    "type": "enum",
+                    "doc": "Raiffesisen online rights is about making the account available for Internet Banking. - **ACTIVE** means actively use the account and make transactions. - **PASSIVE** will be just auditing the account but no rights for transactions.",
+                    "name": "RaiffeisenOnlineRights",
+                    "symbols": [
+                        "ACTIVE",
+                        "PASSIVE"
+                    ]
+                }
+            ],
+            "doc": "",
+            "default": null
+        }
+    ]
+}

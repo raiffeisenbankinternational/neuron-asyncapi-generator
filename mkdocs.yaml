@@ -1,0 +1,8 @@
+site_name: Neuron ASync API generator
+site_description: Neuron ASync API generator Documentation
+
+nav:
+  - What is Neuron ASync API generator?: 'index.md'
+
+plugins:
+  - techdocs-core

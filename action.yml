@@ -1,0 +1,29 @@
+name: "Generator for AsyncAPI documents"
+description: "Use this action to generate docs or code from your AsyncAPI document."
+author: "Arnar INGASON"
+inputs:
+  template:
+    description: "Template for the generator. Example templates can be found in templates directory."
+    required: false
+  filepath:
+    description: "Location of the AsyncAPI document."
+    default: "asyncapi/asyncapi.yaml"
+    required: false
+  parameters:
+    description: "The template that you use might support and even require specific parameters to be passed to the template for the generation."
+    required: false
+  output:
+    description: "Directory where to put the generated files."
+    required: false
+    default: "output"
+  registry:
+    description: "Registry to use when fetching template."
+    required: false
+    default: "https://artifacts.rbi.tech/artifactory/api/npm/npm-group/"
+  config_file:
+    description: "Path to a config file for specifying the parameters on a repository level."
+    required: false
+    default: ".github/asyncapi.yaml"
+runs:
+  using: "node16"
+  main: "dist/index.js"

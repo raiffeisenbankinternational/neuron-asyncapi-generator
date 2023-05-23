@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Add auto-generated neuron resources
+bases:
+- resources
+
+# Add "neuron.rbi.tech/cluster" annotation to all "neuron.isf" resources
+patches:
+- target:
+    group: "neuron.isf"
+  patch: |-
+    - op: replace
+      path: /metadata/annotations/neuron.rbi.tech~1cluster
+      value: dev01 # Replace me with the pulsar cluster name you want to target

@@ -1,0 +1,19 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: neuron-asyncapi-generator
+  description: Neuron ASync API generator
+  annotations:
+    backstage.io/source-location: url:https://code.rbi.tech/raiffeisen/neuron-asyncapi-generator
+    backstage.io/techdocs-ref: url:https://code.rbi.tech/raiffeisen/neuron-asyncapi-generator
+  tags:
+  - neuron
+  - neuron-core-service
+  - github-action
+  - asyncapi
+  - documentation
+spec:
+  type: service
+  lifecycle: production
+  owner: neuron-trusted-commiters
+  system: neuron

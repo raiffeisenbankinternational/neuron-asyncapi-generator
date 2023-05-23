@@ -1,0 +1,98 @@
+name: Build templates
+
+on:
+  pull_request:
+    paths:
+      - "templates/**"
+  push:
+    branches:
+      - main
+    paths:
+      - "templates/**"
+
+jobs:
+  find_changes:
+    runs-on: self-hosted
+    outputs:
+      templates: ${{ steps.search.outputs.templates }}
+    env:
+      GH_VERSION: 2.14.3
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: find changed templates
+        id: search
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            FILES=$(curl "${{ github.server_url }}/api/v3/repos/${{ github.repository }}/pulls/${{ github.event.number }}/files?per_page=1000" \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}")
+            TEMPLATES=$(echo $FILES | \
+              jq -c '[.[] | select(.filename | startswith("templates")) | .filename | capture("^templates/(?<name>[^/]+).*$") | .name] | unique_by(.)')
+          else
+            TEMPLATES=$(git diff --name-only HEAD~1 HEAD -- templates | \
+              sed -E 's|^templates/([^/]+).*$|\1|g' | \
+              jq -sc --raw-input 'split("\n") | map(select(. != "")) | unique_by(.)')
+          fi
+
+          echo "::debug::templates=$TEMPLATES"
+          echo "::set-output name=templates::$TEMPLATES"
+
+  publish:
+    runs-on: self-hosted
+    needs: find_changes
+    strategy:
+      fail-fast: false
+      matrix:
+        template: ${{ fromJSON(needs.find_changes.outputs.templates) }}
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+        with:
+          node-version: 16
+
+      - name: setup registries
+        env:
+          NPM_CONFIG_USERCONFIG: ${{ runner.temp }}/.npmrc
+        run: |
+          # masking base64 of auth token
+          echo -n ${{ secrets.NPM_AUTH_TOKEN }} | base64 | xargs -I{} echo "::add-mask::{}"
+          # Artifactory npm registries need a special way of logging in
+          curl -u 'neuron-deployer:${{ secrets.NPM_AUTH_TOKEN }}' https://artifacts.rbi.tech/artifactory/api/npm/neuron-npm-host/auth/neuron > $NPM_CONFIG_USERCONFIG
+          # Let's also set npm-group as default registry
+          echo "registry=https://artifacts.rbi.tech/artifactory/api/npm/npm-group/" >> $NPM_CONFIG_USERCONFIG
+          # Set this in the env of following steps
+          echo "NPM_CONFIG_USERCONFIG=$NPM_CONFIG_USERCONFIG" >> $GITHUB_ENV
+
+      - name: fetch npm-publish
+        run: |
+          npm i --no-save @jsdevtools/npm-publish
+
+      - name: check version
+        shell: bash
+        env:
+          SEARCH_STRING: already published to NPM
+        run: |
+          CHECK="$(npx npm-publish --dry-run ./templates/${{ matrix.template }}/package.json)"
+          if [[ "$CHECK" == *"$SEARCH_STRING"* ]]; then
+            # Find line in package.json where version is defined.
+            LINE="$(grep -n "\"version\"" package.json | cut -d':' -f1)"
+            # Output error message for github workflows to consume and create
+            # annotation in relevant file in pull request.
+            echo "::error title=existing-version,file=templates/${{ matrix.template }}/package.json,line=$LINE,endLine=$LINE::$(echo $CHECK | grep "$SEARCH_STRING")"
+            exit 1
+          fi
+          echo $CHECK
+
+      - name: publish version
+        if: github.event_name == 'push' && github.ref_name == 'main'
+        shell: bash
+        run: |
+          npx npm-publish ./templates/${{ matrix.template }}/package.json

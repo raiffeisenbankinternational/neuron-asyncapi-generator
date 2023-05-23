@@ -1,0 +1,42 @@
+root: true
+extends: 
+  - "@jsdevtools"
+  - "plugin:react/recommended"
+
+env:
+  node: true
+  commonjs: true
+
+overrides:
+  - files:
+      - "templates/*/template/**/*.js"
+      - "templates/*/components/*.js"
+    parserOptions:
+      sourceType: module
+      ecmaFeatures:
+        jsx: true
+
+rules:
+  # We do not need 'use strict'
+  strict: 0
+  # I'm not too bothered by this
+  no-empty-function: 0
+  # We do not require jsdoc
+  jsdoc/require-jsdoc: 0
+  # Want to use 1tbs brace-style
+  brace-style: [2, "1tbs"]
+  # Don't want space before parens in functions
+  space-before-function-paren:
+    [
+      "error",
+      { "anonymous": "always", "named": "never", "asyncArrow": "always" },
+    ]
+
+  # Align with options in prettier
+  indent: ["error", 2, { "offsetTernaryExpressions": true, "SwitchCase": 1 }]
+  object-curly-spacing: ["error", "always"]
+
+  # Recommended react rules that are not needed for our templates
+  react/react-in-jsx-scope: 0
+  react/jsx-key: 0
+
